@@ -4,6 +4,7 @@ using System.Collections;
 public class Obj {
 	public Vector2 pos, prevPos, vel, dilatedVel;
 	public float rot, velRot;
+	public bool immovable;
 	public GameObject go;
 
 	public Obj(GameObject go, Vector2 pos, Vector2 vel, float rot) {
@@ -14,7 +15,7 @@ public class Obj {
 		this.rot = rot;
 	}
 
-	public float UpdatePos(float fwd, float velRot) {
+	public float UpdatePos(float fwd) {
 		Obj field = null;
 		float dist = 0, mul = 1;
 		// update velocity
@@ -33,7 +34,7 @@ public class Obj {
 			}
 		}
 		// update position and rotation
-		dilatedVel = field == null ? vel : field.dilatedVel + (vel - field.dilatedVel) * mul;
+		dilatedVel = field == null || immovable ? vel : field.dilatedVel + (vel - field.dilatedVel) * mul;
 		pos += dilatedVel / Manager.timeScale;
 		rot += velRot * mul / Manager.timeScale;
 		if (rot < 0) rot += Mathf.PI * 2;

@@ -21,56 +21,30 @@ public class Manager : MonoBehaviour {
 		fields.Add(player);
 		asteroids.Add(new Obj(Instantiate(clockPrefab) as GameObject, new Vector2(-200, 0), new Vector2(), 0));
 		asteroids[0].velRot = playerRotSpd;
+		asteroids[0].immovable = true;
 		asteroids.Add(new Obj(Instantiate(clockPrefab) as GameObject, new Vector2(200, 0), new Vector2(), Mathf.PI));
 		asteroids[1].velRot = playerRotSpd;
+		asteroids[1].immovable = true;
 	}
 	
 	// Update is called once per frame
 	void Update() {
 		if (Input.GetMouseButton(0)) player.rot = Mathf.Atan2(Input.mousePosition.y - Screen.height / 2, Input.mousePosition.x - Screen.width / 2);
-		/*while (fields.Count < 20) {
-			Vector2 p = RandInsideCircle(1000, 2000);
-			Vector2 v = RandInsideCircle(0, 0.15f * updateRate);
-			if (Random.value < 0.1) {
-				fields.Add(new Obj(Instantiate(fieldPrefab) as GameObject, player.pos + p, player.dilatedVel + v, 0));
-			} else {
-				Obj asteroid = new Obj(Instantiate(asteroidPrefab) as GameObject, player.pos + p, player.dilatedVel + v, Random.value * Mathf.PI * 2);
-				asteroid.velRot = Random.Range(-playerRotSpd * 2, playerRotSpd * 2);
-				asteroids.Add(asteroid);
-			}
-		}*/
 		player.Draw();
-		for (int i = 0; i < asteroids.Count; i++) {
-			asteroids[i].Draw();
-			if (Vector2.Distance(asteroids[i].pos, player.pos) > radius) {
-				Destroy(asteroids[i].go);
-				asteroids.RemoveAt(i);
-				i--;
-			}
-		}
-		for (int i = 1; i < fields.Count; i++) {
-			fields[i].Draw();
-			if (Vector2.Distance(fields[i].pos, player.pos) > radius) {
-				Destroy(fields[i].go);
-				fields.RemoveAt(i);
-				i--;
-			}
-		}
+		foreach (Obj asteroid in asteroids) asteroid.Draw();
+		foreach (Obj field in fields) field.Draw();
 	}
 
 	void FixedUpdate() {
-		if (timeScale < updateRate / 1500) return;
 		if (Mathf.Abs(asteroids[0].rot - asteroids[1].rot) < 0.1) return;
 		if (Input.GetMouseButton(0) && Random.value < 0.02f * updateRate) {
 			asteroids.Add(new Obj(Instantiate(propelPrefab) as GameObject, player.pos,
 				player.vel - propelSpd * new Vector2(Mathf.Cos(player.rot), Mathf.Sin(player.rot)) + Random.insideUnitCircle * propelSpd / 6, 0));
 		}
 		foreach (Obj field in fields) field.prevPos = field.pos;
-		foreach (Obj field in fields) if (field != player) field.UpdatePos(0, 0);
-		foreach (Obj asteroid in asteroids) asteroid.UpdatePos(0, asteroid.velRot);
-		asteroids[0].pos = new Vector2(-200, 0);
-		asteroids[1].pos = new Vector2(200, 0);
-		timeScale = player.UpdatePos(Input.GetMouseButton(0) ? 0.2f : 0, 0);
+		foreach (Obj field in fields) if (field != player) field.UpdatePos(0);
+		foreach (Obj asteroid in asteroids) asteroid.UpdatePos(0);
+		timeScale = player.UpdatePos(Input.GetMouseButton(0) ? 0.2f : 0);
 	}
 
 	Vector2 RandInsideCircle(float min, float max) {
