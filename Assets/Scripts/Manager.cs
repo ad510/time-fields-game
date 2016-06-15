@@ -6,9 +6,10 @@ public class Manager : MonoBehaviour {
 
 	const float updateRate = 33;
 	const float radius = 2000;
-	const float playerRotSpd = Mathf.PI / 1000 * updateRate;
+	const float clockRotSpd = Mathf.PI / 1000 * updateRate;
 	const float propelSpd = 1 * updateRate;
 
+	public static int level = 1;
 	public static float timeScale = 1;
 	public static Obj player;
 	public static List<Obj> asteroids = new List<Obj>();
@@ -17,14 +18,31 @@ public class Manager : MonoBehaviour {
 	// Use this for initialization
 	void Start() {
 		Time.fixedDeltaTime = updateRate / 1000;
-		player = new Obj(Instantiate(playerPrefab) as GameObject, new Vector2(), new Vector2(), Mathf.PI / 2);
+		LoadLevel();
+	}
+
+	void LoadLevel() {
+		if (player != null) {
+			Destroy(player.go);
+			foreach (Obj asteroid in asteroids) Destroy(asteroid.go);
+			foreach (Obj field in fields) Destroy(field.go);
+			asteroids.Clear();
+			fields.Clear();
+		}
+		player = new Obj(Instantiate(playerPrefab) as GameObject, new Vector2(), new Vector2(), Mathf.PI / 2, 0);
 		fields.Add(player);
-		asteroids.Add(new Obj(Instantiate(clockPrefab) as GameObject, new Vector2(-200, 0), new Vector2(), 0));
-		asteroids[0].velRot = playerRotSpd;
-		asteroids[0].immovable = true;
-		asteroids.Add(new Obj(Instantiate(clockPrefab) as GameObject, new Vector2(200, 0), new Vector2(), Mathf.PI));
-		asteroids[1].velRot = playerRotSpd;
-		asteroids[1].immovable = true;
+		switch (level) {
+		case 1:
+			asteroids.Add(new Obj(Instantiate(clockPrefab) as GameObject, new Vector2(-200, 0), new Vector2(), 0, clockRotSpd));
+			asteroids[0].immovable = true;
+			asteroids.Add(new Obj(Instantiate(clockPrefab) as GameObject, new Vector2(200, 0), new Vector2(), Mathf.PI, clockRotSpd));
+			asteroids[1].immovable = true;
+			break;
+		case 2:
+			asteroids.Add(new Obj(Instantiate(clockPrefab) as GameObject, new Vector2(200, 0), new Vector2(), 0, clockRotSpd));
+			asteroids.Add(new Obj(Instantiate(clockPrefab) as GameObject, new Vector2(400, 0), new Vector2(), 0, clockRotSpd));
+			break;
+		}
 	}
 	
 	// Update is called once per frame
@@ -36,22 +54,18 @@ public class Manager : MonoBehaviour {
 	}
 
 	void FixedUpdate() {
-		if (Mathf.Abs(asteroids[0].rot - asteroids[1].rot) < 0.1) return;
+		if (level == 1 && Mathf.Abs(asteroids[0].rot - asteroids[1].rot) < 0.1
+				|| level == 2 && Vector2.Distance(asteroids[0].pos, asteroids[1].pos) < 100) {
+			level++;
+			LoadLevel();
+		}
 		if (Input.GetMouseButton(0) && Random.value < 0.02f * updateRate) {
 			asteroids.Add(new Obj(Instantiate(propelPrefab) as GameObject, player.pos,
-				player.vel - propelSpd * new Vector2(Mathf.Cos(player.rot), Mathf.Sin(player.rot)) + Random.insideUnitCircle * propelSpd / 6, 0));
+				player.vel - propelSpd * new Vector2(Mathf.Cos(player.rot), Mathf.Sin(player.rot)) + Random.insideUnitCircle * propelSpd / 6, 0, 0));
 		}
 		foreach (Obj field in fields) field.prevPos = field.pos;
 		foreach (Obj field in fields) if (field != player) field.UpdatePos(0);
 		foreach (Obj asteroid in asteroids) asteroid.UpdatePos(0);
 		timeScale = player.UpdatePos(Input.GetMouseButton(0) ? 0.2f : 0);
-	}
-
-	Vector2 RandInsideCircle(float min, float max) {
-		Vector2 ret;
-		do {
-			ret = Random.insideUnitCircle * max;
-		} while (ret.sqrMagnitude < min * min);
-		return ret;
 	}
 }

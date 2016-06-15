@@ -7,12 +7,13 @@ public class Obj {
 	public bool immovable;
 	public GameObject go;
 
-	public Obj(GameObject go, Vector2 pos, Vector2 vel, float rot) {
+	public Obj(GameObject go, Vector2 pos, Vector2 vel, float rot, float velRot) {
 		this.go = go;
 		this.pos = pos;
 		this.vel = vel;
 		this.dilatedVel = vel;
 		this.rot = rot;
+		this.velRot = velRot;
 	}
 
 	public float UpdatePos(float fwd) {
