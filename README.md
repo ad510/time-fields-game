@@ -1,8 +1,6 @@
 Time Fields
 ===========
 
-To play, [go here](https://ad510.github.io/time-fields-game) or open index.htm.
-
 Game about time fields inspired by my [Death by Time Travel](https://github.com/ad510/time-dilation-game) prototype, built for CSCI 526 at USC.
 
 Copying
