@@ -114,6 +114,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerPrefab: {fileID: 183902, guid: a6a076f1c7a8441fbb1d81921bd0f394, type: 2}
   asteroidPrefab: {fileID: 109696, guid: dca0800cc8cb348309ec2d4eba561c80, type: 2}
+  clockPrefab: {fileID: 155216, guid: a969b800fb9af4ee3bd30fc49d7e6d93, type: 2}
   fieldPrefab: {fileID: 106730, guid: 0f3c68c0cc6ed4328b8b2a4c7710b15d, type: 2}
   propelPrefab: {fileID: 113950, guid: e1cdd7c9ca34b464597bc279fa82ab24, type: 2}
 --- !u!4 &1727416053
@@ -178,7 +179,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.49803922, g: 0.49803922, b: 0.49803922, a: 1}
+  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 1}
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0

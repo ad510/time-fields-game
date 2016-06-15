@@ -24,7 +24,7 @@ public class Obj {
 		foreach (Obj f in Manager.fields) {
 			if (f != this) {
 				float d = Vector2.Distance(pos, f.prevPos);
-				float m = Mathf.Clamp01(d / 500 - 0.2f); // possible to compute this after loop, or use a weighted average instead (sum up all delta v's won't work b/c 2 close fields would repel player)
+				float m = Mathf.Clamp01(d / 500 + 0.2f); // possible to compute this after loop, or use a weighted average instead (sum up all delta v's won't work b/c 2 close fields would repel player)
 				if (m < 1 && (field == null || d < dist)) {
 					field = f;
 					dist = d;
@@ -36,6 +36,8 @@ public class Obj {
 		dilatedVel = field == null ? vel : field.dilatedVel + (vel - field.dilatedVel) * mul;
 		pos += dilatedVel / Manager.timeScale;
 		rot += velRot * mul / Manager.timeScale;
+		if (rot < 0) rot += Mathf.PI * 2;
+		if (rot > Mathf.PI * 2) rot -= Mathf.PI * 2;
 		return mul;
 	}
 

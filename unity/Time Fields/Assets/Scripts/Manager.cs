@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 public class Manager : MonoBehaviour {
-	public GameObject playerPrefab, asteroidPrefab, fieldPrefab, propelPrefab;
+	public GameObject playerPrefab, asteroidPrefab, clockPrefab, fieldPrefab, propelPrefab;
 
 	const float updateRate = 33;
 	const float radius = 2000;
@@ -18,12 +18,17 @@ public class Manager : MonoBehaviour {
 	void Start() {
 		Time.fixedDeltaTime = updateRate / 1000;
 		player = new Obj(Instantiate(playerPrefab) as GameObject, new Vector2(), new Vector2(), Mathf.PI / 2);
+		fields.Add(player);
+		asteroids.Add(new Obj(Instantiate(clockPrefab) as GameObject, new Vector2(-200, 0), new Vector2(), 0));
+		asteroids[0].velRot = playerRotSpd;
+		asteroids.Add(new Obj(Instantiate(clockPrefab) as GameObject, new Vector2(200, 0), new Vector2(), Mathf.PI));
+		asteroids[1].velRot = playerRotSpd;
 	}
 	
 	// Update is called once per frame
 	void Update() {
 		if (Input.GetMouseButton(0)) player.rot = Mathf.Atan2(Input.mousePosition.y - Screen.height / 2, Input.mousePosition.x - Screen.width / 2);
-		while (fields.Count < 20) {
+		/*while (fields.Count < 20) {
 			Vector2 p = RandInsideCircle(1000, 2000);
 			Vector2 v = RandInsideCircle(0, 0.15f * updateRate);
 			if (Random.value < 0.1) {
@@ -33,7 +38,7 @@ public class Manager : MonoBehaviour {
 				asteroid.velRot = Random.Range(-playerRotSpd * 2, playerRotSpd * 2);
 				asteroids.Add(asteroid);
 			}
-		}
+		}*/
 		player.Draw();
 		for (int i = 0; i < asteroids.Count; i++) {
 			asteroids[i].Draw();
@@ -43,7 +48,7 @@ public class Manager : MonoBehaviour {
 				i--;
 			}
 		}
-		for (int i = 0; i < fields.Count; i++) {
+		for (int i = 1; i < fields.Count; i++) {
 			fields[i].Draw();
 			if (Vector2.Distance(fields[i].pos, player.pos) > radius) {
 				Destroy(fields[i].go);
@@ -55,13 +60,16 @@ public class Manager : MonoBehaviour {
 
 	void FixedUpdate() {
 		if (timeScale < updateRate / 1500) return;
+		if (Mathf.Abs(asteroids[0].rot - asteroids[1].rot) < 0.1) return;
 		if (Input.GetMouseButton(0) && Random.value < 0.02f * updateRate) {
 			asteroids.Add(new Obj(Instantiate(propelPrefab) as GameObject, player.pos,
 				player.vel - propelSpd * new Vector2(Mathf.Cos(player.rot), Mathf.Sin(player.rot)) + Random.insideUnitCircle * propelSpd / 6, 0));
 		}
 		foreach (Obj field in fields) field.prevPos = field.pos;
-		foreach (Obj field in fields) field.UpdatePos(0, 0);
+		foreach (Obj field in fields) if (field != player) field.UpdatePos(0, 0);
 		foreach (Obj asteroid in asteroids) asteroid.UpdatePos(0, asteroid.velRot);
+		asteroids[0].pos = new Vector2(-200, 0);
+		asteroids[1].pos = new Vector2(200, 0);
 		timeScale = player.UpdatePos(Input.GetMouseButton(0) ? 0.2f : 0, 0);
 	}
 
