@@ -6,7 +6,6 @@ public class Manager : MonoBehaviour {
 
 	const float updateRate = 33;
 	const float radius = 2000;
-	const float playerAcc = 0.2f;
 	const float playerRotSpd = Mathf.PI / 1000 * updateRate;
 	const float propelSpd = 1 * updateRate;
 
@@ -23,6 +22,7 @@ public class Manager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update() {
+		if (Input.GetMouseButton(0)) player.rot = Mathf.Atan2(Input.mousePosition.y - Screen.height / 2, Input.mousePosition.x - Screen.width / 2);
 		while (fields.Count < 20) {
 			Vector2 p = RandInsideCircle(1000, 2000);
 			Vector2 v = RandInsideCircle(0, 0.15f * updateRate);
@@ -55,16 +55,14 @@ public class Manager : MonoBehaviour {
 
 	void FixedUpdate() {
 		if (timeScale < updateRate / 1500) return;
-		if (Input.GetKey(KeyCode.UpArrow) && Random.value < 0.02f * updateRate) Propel(-1);
-		if (Input.GetKey(KeyCode.DownArrow) && Random.value < 0.02f * updateRate) Propel(1);
+		if (Input.GetMouseButton(0) && Random.value < 0.02f * updateRate) {
+			asteroids.Add(new Obj(Instantiate(propelPrefab) as GameObject, player.pos,
+				player.vel - propelSpd * new Vector2(Mathf.Cos(player.rot), Mathf.Sin(player.rot)) + Random.insideUnitCircle * propelSpd / 6, 0));
+		}
 		foreach (Obj field in fields) field.prevPos = field.pos;
 		foreach (Obj field in fields) field.UpdatePos(0, 0);
 		foreach (Obj asteroid in asteroids) asteroid.UpdatePos(0, asteroid.velRot);
-		timeScale = player.UpdatePos(Input.GetAxis("Vertical") * playerAcc, -Input.GetAxis("Horizontal") * playerRotSpd);
-	}
-
-	void Propel(float dir) {
-		asteroids.Add(new Obj(Instantiate(propelPrefab) as GameObject, player.pos, player.vel + propelSpd * dir * new Vector2(Mathf.Cos(player.rot), Mathf.Sin(player.rot)) + Random.insideUnitCircle * propelSpd / 6, 0));
+		timeScale = player.UpdatePos(Input.GetMouseButton(0) ? 0.2f : 0, 0);
 	}
 
 	Vector2 RandInsideCircle(float min, float max) {
