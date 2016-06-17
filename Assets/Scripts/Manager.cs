@@ -29,18 +29,16 @@ public class Manager : MonoBehaviour {
 			asteroids.Clear();
 			fields.Clear();
 		}
-		player = new Obj(Instantiate(playerPrefab), new Vector2(), new Vector2(), Mathf.PI / 2, 0);
+		player = new Obj(Instantiate(playerPrefab), new Vector2(), new Vector2(), Mathf.PI / 2);
 		fields.Add(player);
 		switch (level) {
 		case 1:
-			asteroids.Add(new Obj(Instantiate(clockPrefab), new Vector2(-200, 0), new Vector2(), 0, clockRotSpd));
-			asteroids[0].immovable = true;
-			asteroids.Add(new Obj(Instantiate(clockPrefab), new Vector2(200, 0), new Vector2(), Mathf.PI, clockRotSpd));
-			asteroids[1].immovable = true;
+			asteroids.Add(new Obj(Instantiate(clockPrefab), new Vector2(-200, 0), new Vector2(), 0, clockRotSpd, true, true));
+			asteroids.Add(new Obj(Instantiate(clockPrefab), new Vector2(200, 0), new Vector2(), Mathf.PI, clockRotSpd, true, true));
 			break;
 		case 2:
-			asteroids.Add(new Obj(Instantiate(clockPrefab), new Vector2(200, 0), new Vector2(), 0, clockRotSpd));
-			asteroids.Add(new Obj(Instantiate(clockPrefab), new Vector2(400, 0), new Vector2(), 0, clockRotSpd));
+			asteroids.Add(new Obj(Instantiate(clockPrefab), new Vector2(200, 0), new Vector2(), 0, clockRotSpd, true));
+			asteroids.Add(new Obj(Instantiate(clockPrefab), new Vector2(400, 0), new Vector2(), 0, clockRotSpd, true));
 			break;
 		}
 	}
@@ -61,7 +59,7 @@ public class Manager : MonoBehaviour {
 		}
 		if (Input.GetMouseButton(0) && Random.value < 0.02f * updateRate) {
 			asteroids.Add(new Obj(Instantiate(propelPrefab), player.pos,
-				player.vel - propelSpd * new Vector2(Mathf.Cos(player.rot), Mathf.Sin(player.rot)) + Random.insideUnitCircle * propelSpd / 6, 0, 0));
+				player.vel - propelSpd * new Vector2(Mathf.Cos(player.rot), Mathf.Sin(player.rot)) + Random.insideUnitCircle * propelSpd / 6, 0));
 		}
 		foreach (Obj field in fields) field.prevPos = field.pos;
 		foreach (Obj field in fields) if (field != player) field.UpdatePos(0);
