@@ -12,7 +12,7 @@ public class Manager : MonoBehaviour {
 	public static int level = 1;
 	public static float timeScale = 1;
 	public static Obj player;
-	public static List<Obj> asteroids = new List<Obj>();
+	public static List<Obj> objs = new List<Obj>();
 	public static List<Obj> fields = new List<Obj>();
 
 	// Use this for initialization
@@ -24,21 +24,21 @@ public class Manager : MonoBehaviour {
 	void LoadLevel() {
 		if (player != null) {
 			Destroy(player.go);
-			foreach (Obj asteroid in asteroids) Destroy(asteroid.go);
+			foreach (Obj obj in objs) Destroy(obj.go);
 			foreach (Obj field in fields) Destroy(field.go);
-			asteroids.Clear();
+			objs.Clear();
 			fields.Clear();
 		}
 		player = new Obj(Instantiate(playerPrefab), new Vector2(), new Vector2(), Mathf.PI / 2);
 		fields.Add(player);
 		switch (level) {
 		case 1:
-			asteroids.Add(new Obj(Instantiate(clockPrefab), new Vector2(-200, 0), new Vector2(), 0, clockRotSpd, true, true));
-			asteroids.Add(new Obj(Instantiate(clockPrefab), new Vector2(200, 0), new Vector2(), Mathf.PI, clockRotSpd, true, true));
+			objs.Add(new Obj(Instantiate(clockPrefab), new Vector2(-200, 0), new Vector2(), 0, clockRotSpd, true, true));
+			objs.Add(new Obj(Instantiate(clockPrefab), new Vector2(200, 0), new Vector2(), Mathf.PI, clockRotSpd, true, true));
 			break;
 		case 2:
-			asteroids.Add(new Obj(Instantiate(clockPrefab), new Vector2(200, 0), new Vector2(), 0, clockRotSpd, true));
-			asteroids.Add(new Obj(Instantiate(clockPrefab), new Vector2(400, 0), new Vector2(), 0, clockRotSpd, true));
+			objs.Add(new Obj(Instantiate(clockPrefab), new Vector2(200, 0), new Vector2(), 0, clockRotSpd, true));
+			objs.Add(new Obj(Instantiate(clockPrefab), new Vector2(400, 0), new Vector2(), 0, clockRotSpd, true));
 			break;
 		}
 	}
@@ -47,23 +47,23 @@ public class Manager : MonoBehaviour {
 	void Update() {
 		if (Input.GetMouseButton(0)) player.rot = Mathf.Atan2(Input.mousePosition.y - Screen.height / 2, Input.mousePosition.x - Screen.width / 2);
 		player.Draw();
-		foreach (Obj asteroid in asteroids) asteroid.Draw();
+		foreach (Obj obj in objs) obj.Draw();
 		foreach (Obj field in fields) field.Draw();
 	}
 
 	void FixedUpdate() {
-		if (level == 1 && Mathf.Abs(asteroids[0].rot - asteroids[1].rot) < 0.1
-				|| level == 2 && Vector2.Distance(asteroids[0].pos, asteroids[1].pos) < 100) {
+		if (level == 1 && Mathf.Abs(objs[0].rot - objs[1].rot) < 0.1
+				|| level == 2 && Vector2.Distance(objs[0].pos, objs[1].pos) < 100) {
 			level++;
 			LoadLevel();
 		}
 		if (Input.GetMouseButton(0) && Random.value < 0.02f * updateRate) {
-			asteroids.Add(new Obj(Instantiate(propelPrefab), player.pos,
+			objs.Add(new Obj(Instantiate(propelPrefab), player.pos,
 				player.vel - propelSpd * new Vector2(Mathf.Cos(player.rot), Mathf.Sin(player.rot)) + Random.insideUnitCircle * propelSpd / 6, 0));
 		}
 		foreach (Obj field in fields) field.prevPos = field.pos;
 		foreach (Obj field in fields) if (field != player) field.UpdatePos(0);
-		foreach (Obj asteroid in asteroids) asteroid.UpdatePos(0);
+		foreach (Obj obj in objs) obj.UpdatePos(0);
 		timeScale = player.UpdatePos(Input.GetMouseButton(0) ? 0.2f : 0);
 	}
 }
