@@ -37,12 +37,19 @@ public class Manager : MonoBehaviour {
 			objs.Add(new Obj(Instantiate(clockPrefab), new Vector2(200, 0), new Vector2(), Mathf.PI, clockRotSpd, true, true));
 			break;
 		case 2:
+			objs.Add(new Obj(Instantiate(clockPrefab), new Vector2(0, 200), new Vector2(), 0, clockRotSpd, true, true));
+			objs.Add(new Obj(Instantiate(clockPrefab), new Vector2(200, 0), new Vector2(), 0, clockRotSpd, true, true));
+			objs.Add(new Obj(Instantiate(asteroidPrefab), new Vector2(400, 200), new Vector2(), 0, 0, true, true));
+			objs.Add(new Obj(Instantiate(asteroidPrefab), objs[0].pos, new Vector2(600 * updateRate, 0), 0, 0));
+			objs.Add(new Obj(Instantiate(asteroidPrefab), objs[1].pos, new Vector2(0, 600 * updateRate), 0, 0));
+			break;
+		case 3:
 			objs.Add(new Obj(Instantiate(clockPrefab), new Vector2(200, 0), new Vector2(), 0, clockRotSpd, true));
 			objs.Add(new Obj(Instantiate(clockPrefab), new Vector2(400, 0), new Vector2(), 0, clockRotSpd, true));
 			break;
-		case 3:
-			objs.Add(new Obj(Instantiate(asteroidPrefab), new Vector2(-200, 200), new Vector2(), 0, clockRotSpd, true, true));
-			objs.Add(new Obj(Instantiate(asteroidPrefab), new Vector2(200, 200), new Vector2(), 0, clockRotSpd, true, true));
+		case 4:
+			objs.Add(new Obj(Instantiate(asteroidPrefab), new Vector2(-200, 200), new Vector2(), 0, 0, true, true));
+			objs.Add(new Obj(Instantiate(asteroidPrefab), new Vector2(200, 200), new Vector2(), 0, 0, true, true));
 			objs.Add(new Obj(Instantiate(clockPrefab), objs[0].pos, new Vector2(100 * updateRate, 0), 0, clockRotSpd, true));
 			break;
 		}
@@ -58,8 +65,9 @@ public class Manager : MonoBehaviour {
 
 	void FixedUpdate() {
 		if (level == 1 && Mathf.Abs(objs[0].rot - objs[1].rot) < 0.1
-				|| level == 2 && Vector2.Distance(objs[0].pos, objs[1].pos) < 100
-				|| level == 3 && Vector2.Distance(objs[1].pos, objs[2].pos) < 100) {
+				|| level == 2 && objs[3].pos.x > objs[2].pos.x
+				|| level == 3 && Vector2.Distance(objs[0].pos, objs[1].pos) < 100
+				|| level == 4 && objs[2].pos.x > objs[1].pos.x) {
 			level++;
 			LoadLevel();
 		}
@@ -71,7 +79,15 @@ public class Manager : MonoBehaviour {
 		foreach (Obj obj in objs) obj.UpdatePrevPos();
 		foreach (Obj field in fields) if (field != player) field.UpdatePos(0);
 		foreach (Obj obj in objs) obj.UpdatePos(0);
-		if (level == 3 && objs[2].rot < objs[2].prevRot) objs[2].pos = objs[0].pos;
+		if (level == 2) {
+			if (objs[0].rot < objs[0].prevRot) objs[3].pos = objs[0].pos;
+			if (objs[1].rot < objs[1].prevRot) objs[4].pos = objs[1].pos;
+			if (Vector2.Distance(objs[3].pos, objs[4].pos) < 50) {
+				objs[3].pos.x = -10000;
+				objs[4].pos.x = -20000;
+			}
+		}
+		if (level == 4 && objs[2].rot < objs[2].prevRot) objs[2].pos = objs[0].pos;
 		timeScale = player.UpdatePos(Input.GetMouseButton(0) ? 0.2f : 0);
 	}
 }
