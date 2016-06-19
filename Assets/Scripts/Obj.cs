@@ -3,7 +3,7 @@ using System.Collections;
 
 public class Obj {
 	public Vector2 pos, prevPos, vel, dilatedVel;
-	public float rot, velRot;
+	public float rot, prevRot, velRot;
 	public bool alwaysOnscreen, immovable;
 	public GameObject go;
 
@@ -16,6 +16,11 @@ public class Obj {
 		this.velRot = velRot;
 		this.alwaysOnscreen = alwaysOnscreen;
 		this.immovable = immovable;
+	}
+
+	public void UpdatePrevPos() {
+		prevPos = pos;
+		prevRot = rot;
 	}
 
 	public float UpdatePos(float fwd) {

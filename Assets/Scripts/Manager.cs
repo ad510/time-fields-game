@@ -4,10 +4,10 @@ using System.Collections.Generic;
 public class Manager : MonoBehaviour {
 	public GameObject playerPrefab, asteroidPrefab, clockPrefab, fieldPrefab, propelPrefab;
 
-	const float updateRate = 33;
+	const float updateRate = 0.033f;
 	const float radius = 2000;
-	const float clockRotSpd = Mathf.PI / 1000 * updateRate;
-	const float propelSpd = 1 * updateRate;
+	const float clockRotSpd = Mathf.PI * updateRate;
+	const float propelSpd = 1000 * updateRate;
 
 	public static int level = 1;
 	public static float timeScale = 1;
@@ -17,7 +17,7 @@ public class Manager : MonoBehaviour {
 
 	// Use this for initialization
 	void Start() {
-		Time.fixedDeltaTime = updateRate / 1000;
+		Time.fixedDeltaTime = updateRate;
 		LoadLevel();
 	}
 
@@ -40,6 +40,11 @@ public class Manager : MonoBehaviour {
 			objs.Add(new Obj(Instantiate(clockPrefab), new Vector2(200, 0), new Vector2(), 0, clockRotSpd, true));
 			objs.Add(new Obj(Instantiate(clockPrefab), new Vector2(400, 0), new Vector2(), 0, clockRotSpd, true));
 			break;
+		case 3:
+			objs.Add(new Obj(Instantiate(asteroidPrefab), new Vector2(-200, 200), new Vector2(), 0, clockRotSpd, true, true));
+			objs.Add(new Obj(Instantiate(asteroidPrefab), new Vector2(200, 200), new Vector2(), 0, clockRotSpd, true, true));
+			objs.Add(new Obj(Instantiate(clockPrefab), objs[0].pos, new Vector2(100 * updateRate, 0), 0, clockRotSpd, true));
+			break;
 		}
 	}
 	
@@ -53,17 +58,20 @@ public class Manager : MonoBehaviour {
 
 	void FixedUpdate() {
 		if (level == 1 && Mathf.Abs(objs[0].rot - objs[1].rot) < 0.1
-				|| level == 2 && Vector2.Distance(objs[0].pos, objs[1].pos) < 100) {
+				|| level == 2 && Vector2.Distance(objs[0].pos, objs[1].pos) < 100
+				|| level == 3 && Vector2.Distance(objs[1].pos, objs[2].pos) < 100) {
 			level++;
 			LoadLevel();
 		}
-		if (Input.GetMouseButton(0) && Random.value < 0.02f * updateRate) {
+		if (Input.GetMouseButton(0) && Random.value < 20 * updateRate) {
 			objs.Add(new Obj(Instantiate(propelPrefab), player.pos,
 				player.vel - propelSpd * new Vector2(Mathf.Cos(player.rot), Mathf.Sin(player.rot)) + Random.insideUnitCircle * propelSpd / 6, 0));
 		}
-		foreach (Obj field in fields) field.prevPos = field.pos;
+		foreach (Obj field in fields) field.UpdatePrevPos();
+		foreach (Obj obj in objs) obj.UpdatePrevPos();
 		foreach (Obj field in fields) if (field != player) field.UpdatePos(0);
 		foreach (Obj obj in objs) obj.UpdatePos(0);
+		if (level == 3 && objs[2].rot < objs[2].prevRot) objs[2].pos = objs[0].pos;
 		timeScale = player.UpdatePos(Input.GetMouseButton(0) ? 0.2f : 0);
 	}
 }
