@@ -11,26 +11,20 @@ public class Manager : MonoBehaviour {
 
 	public static int level = 1;
 	public static float timeScale = 1;
-	public static Obj player;
+	public static Obj field;
 	public static List<Obj> objs = new List<Obj>();
-	public static List<Obj> fields = new List<Obj>();
 
 	// Use this for initialization
 	void Start() {
 		Time.fixedDeltaTime = updateRate;
+		field = new Obj(Instantiate(fieldPrefab), new Vector2(), new Vector2(), 0);
+		field.enabled = false;
 		LoadLevel();
 	}
 
 	void LoadLevel() {
-		if (player != null) {
-			Destroy(player.go);
-			foreach (Obj obj in objs) Destroy(obj.go);
-			foreach (Obj field in fields) Destroy(field.go);
-			objs.Clear();
-			fields.Clear();
-		}
-		player = new Obj(Instantiate(playerPrefab), new Vector2(), new Vector2(), Mathf.PI / 2);
-		fields.Add(player);
+		foreach (Obj obj in objs) Destroy(obj.go);
+		objs.Clear();
 		switch (level) {
 		case 1:
 			objs.Add(new Obj(Instantiate(clockPrefab), new Vector2(-200, 0), new Vector2(), 0, clockRotSpd, true, true));
@@ -57,10 +51,8 @@ public class Manager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update() {
-		if (Input.GetMouseButton(0)) player.rot = Mathf.Atan2(Input.mousePosition.y - Screen.height / 2, Input.mousePosition.x - Screen.width / 2);
-		player.Draw();
+		field.Draw();
 		foreach (Obj obj in objs) obj.Draw();
-		foreach (Obj field in fields) field.Draw();
 	}
 
 	void FixedUpdate() {
@@ -71,14 +63,17 @@ public class Manager : MonoBehaviour {
 			level++;
 			LoadLevel();
 		}
-		if (Input.GetMouseButton(0) && Random.value < 20 * updateRate) {
-			objs.Add(new Obj(Instantiate(propelPrefab), player.pos,
-				player.vel - propelSpd * new Vector2(Mathf.Cos(player.rot), Mathf.Sin(player.rot)) + Random.insideUnitCircle * propelSpd / 6, 0));
+		if (Input.GetMouseButton(0)) {
+			field.prevPos = field.pos;
+			field.pos = Camera.main.ScreenToWorldPoint(Input.mousePosition) * 100;
+			if (!field.enabled) field.prevPos = field.pos;
+			field.dilatedVel = field.vel = field.pos - field.prevPos;
+			field.enabled = true;
+		} else {
+			field.enabled = false;
 		}
-		foreach (Obj field in fields) field.UpdatePrevPos();
 		foreach (Obj obj in objs) obj.UpdatePrevPos();
-		foreach (Obj field in fields) if (field != player) field.UpdatePos(0);
-		foreach (Obj obj in objs) obj.UpdatePos(0);
+		foreach (Obj obj in objs) obj.UpdatePos();
 		if (level == 2) {
 			if (objs[0].rot < objs[0].prevRot) objs[3].pos = objs[0].pos;
 			if (objs[1].rot < objs[1].prevRot) objs[4].pos = objs[1].pos;
@@ -88,6 +83,5 @@ public class Manager : MonoBehaviour {
 			}
 		}
 		if (level == 4 && objs[2].rot < objs[2].prevRot) objs[2].pos = objs[0].pos;
-		timeScale = player.UpdatePos(Input.GetMouseButton(0) ? 0.2f : 0);
 	}
 }
