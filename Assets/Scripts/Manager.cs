@@ -17,42 +17,50 @@ public class Manager : MonoBehaviour {
 	// Use this for initialization
 	void Start() {
 		Time.fixedDeltaTime = updateRate;
-		field = new Obj(Instantiate(fieldPrefab), new Vector2(), new Vector2(), 0);
-		field.enabled = false;
+		field = AddObj(fieldPrefab, new Vector2(), new Vector2(), 0);
+		field.enable = false;
+		objs.Remove(field);
 		LoadLevel();
 	}
 
 	void LoadLevel() {
-		foreach (Obj obj in objs) Destroy(obj.go);
+		foreach (Obj obj in objs) Destroy(obj.gameObject);
 		objs.Clear();
 		switch (level) {
 		case 1:
-			objs.Add(new Obj(Instantiate(clockPrefab), new Vector2(-200, 0), new Vector2(), 0, clockRotSpd, true, true));
-			objs.Add(new Obj(Instantiate(clockPrefab), new Vector2(200, 0), new Vector2(), Mathf.PI, clockRotSpd, true, true));
+			AddObj(clockPrefab, new Vector2(-200, 0), new Vector2(), 0, clockRotSpd, true);
+			AddObj(clockPrefab, new Vector2(200, 0), new Vector2(), Mathf.PI, clockRotSpd, true);
 			break;
 		case 2:
-			objs.Add(new Obj(Instantiate(clockPrefab), new Vector2(0, 200), new Vector2(), 0, clockRotSpd, true, true));
-			objs.Add(new Obj(Instantiate(clockPrefab), new Vector2(200, 0), new Vector2(), 0, clockRotSpd, true, true));
-			objs.Add(new Obj(Instantiate(side2Prefab), new Vector2(400, 200), new Vector2(), 0, 0, true, true));
-			objs.Add(new Obj(Instantiate(side1Prefab), objs[0].pos, new Vector2(600 * updateRate, 0), 0, 0));
-			objs.Add(new Obj(Instantiate(asteroidPrefab), objs[1].pos, new Vector2(0, 600 * updateRate), 0, 0));
+			AddObj(clockPrefab, new Vector2(0, 200), new Vector2(), 0, clockRotSpd, true);
+			AddObj(clockPrefab, new Vector2(200, 0), new Vector2(), 0, clockRotSpd, true);
+			AddObj(side2Prefab, new Vector2(400, 200), new Vector2(), 0, 0, true);
+			AddObj(side1Prefab, objs[0].pos, new Vector2(600 * updateRate, 0), 0, 0);
+			AddObj(asteroidPrefab, objs[1].pos, new Vector2(0, 600 * updateRate), 0, 0);
 			break;
 		case 3:
-			objs.Add(new Obj(Instantiate(side1Prefab), new Vector2(200, 0), new Vector2(), 0, clockRotSpd, true));
-			objs.Add(new Obj(Instantiate(side2Prefab), new Vector2(400, 0), new Vector2(), 0, clockRotSpd, true));
+			AddObj(side1Prefab, new Vector2(200, 0), new Vector2(), 0, clockRotSpd);
+			AddObj(side2Prefab, new Vector2(400, 0), new Vector2(), 0, clockRotSpd);
 			break;
 		case 4:
-			objs.Add(new Obj(Instantiate(asteroidPrefab), new Vector2(-200, 200), new Vector2(), 0, 0, true, true));
-			objs.Add(new Obj(Instantiate(side2Prefab), new Vector2(200, 200), new Vector2(), 0, 0, true, true));
-			objs.Add(new Obj(Instantiate(side1Prefab), objs[0].pos, new Vector2(100 * updateRate, 0), 0, clockRotSpd, true));
+			AddObj(asteroidPrefab, new Vector2(-200, 200), new Vector2(), 0, 0, true);
+			AddObj(side2Prefab, new Vector2(200, 200), new Vector2(), 0, 0, true);
+			AddObj(side1Prefab, objs[0].pos, new Vector2(100 * updateRate, 0), 0, clockRotSpd);
 			break;
 		}
 	}
-	
-	// Update is called once per frame
-	void Update() {
-		field.Draw();
-		foreach (Obj obj in objs) obj.Draw();
+
+	Obj AddObj(GameObject prefab, Vector2 pos, Vector2 vel, float rot, float velRot = 0, bool immovable = false) {
+		GameObject go = Instantiate(prefab) as GameObject;
+		Obj o = go.GetComponent<Obj>();
+		o.pos = pos;
+		o.vel = vel;
+		o.dilatedVel = vel;
+		o.rot = rot;
+		o.velRot = velRot;
+		o.immovable = immovable;
+		objs.Add(o);
+		return o;
 	}
 
 	void FixedUpdate() {
@@ -66,11 +74,11 @@ public class Manager : MonoBehaviour {
 		if (Input.GetMouseButton(0)) {
 			field.prevPos = field.pos;
 			field.pos = Camera.main.ScreenToWorldPoint(Input.mousePosition) * 100;
-			if (!field.enabled) field.prevPos = field.pos;
+			if (!field.enable) field.prevPos = field.pos;
 			field.dilatedVel = field.vel = field.pos - field.prevPos;
-			field.enabled = true;
+			field.enable = true;
 		} else {
-			field.enabled = false;
+			field.enable = false;
 		}
 		foreach (Obj obj in objs) obj.UpdatePrevPos();
 		foreach (Obj obj in objs) obj.UpdatePos();

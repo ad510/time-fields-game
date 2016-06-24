@@ -9,6 +9,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 496002}
   - 212: {fileID: 21213024}
+  - 114: {fileID: 11466364}
   m_Layer: 0
   m_Name: Side1
   m_TagString: Untagged
@@ -29,6 +30,26 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
+--- !u!114 &11466364
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 165258}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ecc4c90c4ffd436d8024bee955ab8f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pos: {x: 0, y: 0}
+  prevPos: {x: 0, y: 0}
+  vel: {x: 0, y: 0}
+  dilatedVel: {x: 0, y: 0}
+  rot: 0
+  prevRot: 0
+  velRot: 0
+  enable: 1
+  immovable: 0
 --- !u!212 &21213024
 SpriteRenderer:
   m_ObjectHideFlags: 1
