@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 public class Manager : MonoBehaviour {
-	public GameObject playerPrefab, asteroidPrefab, clockPrefab, fieldPrefab, propelPrefab;
+	public GameObject side1Prefab, side2Prefab, playerPrefab, asteroidPrefab, clockPrefab, fieldPrefab, propelPrefab;
 
 	const float updateRate = 0.033f;
 	const float radius = 2000;
@@ -33,18 +33,18 @@ public class Manager : MonoBehaviour {
 		case 2:
 			objs.Add(new Obj(Instantiate(clockPrefab), new Vector2(0, 200), new Vector2(), 0, clockRotSpd, true, true));
 			objs.Add(new Obj(Instantiate(clockPrefab), new Vector2(200, 0), new Vector2(), 0, clockRotSpd, true, true));
-			objs.Add(new Obj(Instantiate(asteroidPrefab), new Vector2(400, 200), new Vector2(), 0, 0, true, true));
-			objs.Add(new Obj(Instantiate(asteroidPrefab), objs[0].pos, new Vector2(600 * updateRate, 0), 0, 0));
+			objs.Add(new Obj(Instantiate(side2Prefab), new Vector2(400, 200), new Vector2(), 0, 0, true, true));
+			objs.Add(new Obj(Instantiate(side1Prefab), objs[0].pos, new Vector2(600 * updateRate, 0), 0, 0));
 			objs.Add(new Obj(Instantiate(asteroidPrefab), objs[1].pos, new Vector2(0, 600 * updateRate), 0, 0));
 			break;
 		case 3:
-			objs.Add(new Obj(Instantiate(clockPrefab), new Vector2(200, 0), new Vector2(), 0, clockRotSpd, true));
-			objs.Add(new Obj(Instantiate(clockPrefab), new Vector2(400, 0), new Vector2(), 0, clockRotSpd, true));
+			objs.Add(new Obj(Instantiate(side1Prefab), new Vector2(200, 0), new Vector2(), 0, clockRotSpd, true));
+			objs.Add(new Obj(Instantiate(side2Prefab), new Vector2(400, 0), new Vector2(), 0, clockRotSpd, true));
 			break;
 		case 4:
 			objs.Add(new Obj(Instantiate(asteroidPrefab), new Vector2(-200, 200), new Vector2(), 0, 0, true, true));
-			objs.Add(new Obj(Instantiate(asteroidPrefab), new Vector2(200, 200), new Vector2(), 0, 0, true, true));
-			objs.Add(new Obj(Instantiate(clockPrefab), objs[0].pos, new Vector2(100 * updateRate, 0), 0, clockRotSpd, true));
+			objs.Add(new Obj(Instantiate(side2Prefab), new Vector2(200, 200), new Vector2(), 0, 0, true, true));
+			objs.Add(new Obj(Instantiate(side1Prefab), objs[0].pos, new Vector2(100 * updateRate, 0), 0, clockRotSpd, true));
 			break;
 		}
 	}
