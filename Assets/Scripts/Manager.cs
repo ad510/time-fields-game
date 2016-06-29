@@ -40,8 +40,8 @@ public class Manager : MonoBehaviour {
 			message = "Get the green object to the blue object.";
 			break;
 		case 3:
-			AddObj(gunPrefab, new Vector2(0, 200), new Vector2(), 0, clockRotSpd, true);
-			AddObj(gunPrefab, new Vector2(200, 0), new Vector2(), Mathf.PI / 2, clockRotSpd, true);
+			AddObj(gunPrefab, new Vector2(-400, 200), new Vector2(), 0, clockRotSpd, true);
+			AddObj(gunPrefab, new Vector2(0, -200), new Vector2(), Mathf.PI / 2, clockRotSpd, true);
 			AddObj(side2Prefab, new Vector2(400, 200), new Vector2(), 0, 0, true);
 			AddObj(side1Prefab, objs[0].pos, new Vector2(600 * updateRate, 0), 0, 0);
 			AddObj(asteroidPrefab, objs[1].pos, new Vector2(0, 600 * updateRate), 0, 0);
@@ -49,8 +49,8 @@ public class Manager : MonoBehaviour {
 			objs[1].GetComponent<Gun>().shot = objs[4];
 			break;
 		case 4:
-			AddObj(side1Prefab, new Vector2(200, 0), new Vector2(), 0, clockRotSpd);
-			AddObj(side2Prefab, new Vector2(400, 0), new Vector2(), 0, clockRotSpd);
+			AddObj(side1Prefab, new Vector2(-200, 0), new Vector2(), 0, clockRotSpd);
+			AddObj(side2Prefab, new Vector2(200, 0), new Vector2(), 0, clockRotSpd);
 			break;
 		case 5:
 			AddObj(gunPrefab, new Vector2(-200, 200), new Vector2(), 0, 0, true);
