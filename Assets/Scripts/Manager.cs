@@ -9,7 +9,8 @@ public class Manager : MonoBehaviour {
 	public const float clockRotSpd = Mathf.PI * updateRate;
 
 	public static Manager singleton;
-	public static int level = 1;
+	public static int level = 0;
+	public static string message = "";
 	public static Obj field;
 	public static List<Obj> objs = new List<Obj>();
 
@@ -24,14 +25,21 @@ public class Manager : MonoBehaviour {
 	}
 
 	void LoadLevel() {
+		message = "";
 		foreach (Obj obj in objs) Destroy(obj.gameObject);
 		objs.Clear();
 		switch (level) {
+		case 0:
+			message = "Tap and hold to create a time field. Make the clock hands match.";
+			break;
 		case 1:
 			AddObj(clockPrefab, new Vector2(-200, 0), new Vector2(), 0, clockRotSpd, true);
 			AddObj(clockPrefab, new Vector2(200, 0), new Vector2(), Mathf.PI, clockRotSpd, true);
 			break;
 		case 2:
+			message = "Get the green object to the blue object.";
+			break;
+		case 3:
 			AddObj(gunPrefab, new Vector2(0, 200), new Vector2(), 0, clockRotSpd, true);
 			AddObj(gunPrefab, new Vector2(200, 0), new Vector2(), Mathf.PI / 2, clockRotSpd, true);
 			AddObj(side2Prefab, new Vector2(400, 200), new Vector2(), 0, 0, true);
@@ -40,11 +48,11 @@ public class Manager : MonoBehaviour {
 			objs[0].GetComponent<Gun>().shot = objs[3];
 			objs[1].GetComponent<Gun>().shot = objs[4];
 			break;
-		case 3:
+		case 4:
 			AddObj(side1Prefab, new Vector2(200, 0), new Vector2(), 0, clockRotSpd);
 			AddObj(side2Prefab, new Vector2(400, 0), new Vector2(), 0, clockRotSpd);
 			break;
-		case 4:
+		case 5:
 			AddObj(gunPrefab, new Vector2(-200, 200), new Vector2(), 0, 0, true);
 			AddObj(side2Prefab, new Vector2(200, 200), new Vector2(), 0, 0, true);
 			AddObj(side1Prefab, objs[0].pos, new Vector2(100 * updateRate, 0), 0, clockRotSpd);
@@ -67,13 +75,13 @@ public class Manager : MonoBehaviour {
 
 	void FixedUpdate() {
 		if (level == 1 && Mathf.Abs(objs[0].rot % (Mathf.PI * 2) - objs[1].rot % (Mathf.PI * 2)) < 0.1
-				|| level == 2 && objs[3].pos.x > objs[2].pos.x
-				|| level == 3 && Vector2.Distance(objs[0].pos, objs[1].pos) < 100
-				|| level == 4 && objs[2].pos.x > objs[1].pos.x) {
+				|| level == 3 && objs[3].pos.x > objs[2].pos.x
+				|| level == 4 && Vector2.Distance(objs[0].pos, objs[1].pos) < 100
+				|| level == 5 && objs[2].pos.x > objs[1].pos.x) {
 			level++;
 			LoadLevel();
 		}
-		if (Input.GetMouseButton(0)) {
+		if (Input.GetMouseButton(0) && message == "") {
 			field.prevPos = field.pos;
 			field.pos = Camera.main.ScreenToWorldPoint(Input.mousePosition) * 100;
 			if (!field.enable) field.prevPos = field.pos;
@@ -84,12 +92,25 @@ public class Manager : MonoBehaviour {
 		}
 		foreach (Obj obj in objs) obj.UpdatePrevPos();
 		foreach (Obj obj in objs) obj.UpdatePos();
-		if (level == 2) {
+		if (level == 3) {
 			if (Vector2.Distance(objs[3].pos, objs[4].pos) < 50) {
 				objs[3].pos.x = -10000;
 				objs[4].pos.x = -20000;
 			}
 		}
-		if (level == 4 && objs[2].rot % (Mathf.PI * 2) < objs[2].prevRot % (Mathf.PI * 2)) objs[2].pos = objs[0].pos;
+		if (level == 5 && objs[2].rot % (Mathf.PI * 2) < objs[2].prevRot % (Mathf.PI * 2)) objs[2].pos = objs[0].pos;
+	}
+
+	void OnGUI() {
+		if (message != "") {
+			GUILayout.BeginArea(new Rect(0, 0, Screen.width, Screen.height));
+			GUILayout.Label(message);
+			GUILayout.FlexibleSpace();
+			if (GUILayout.Button("Continue")) {
+				level++;
+				LoadLevel();
+			}
+			GUILayout.EndArea();
+		}
 	}
 }
