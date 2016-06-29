@@ -2,15 +2,13 @@
 using System.Collections.Generic;
 
 public class Manager : MonoBehaviour {
-	public GameObject side1Prefab, side2Prefab, playerPrefab, asteroidPrefab, clockPrefab, fieldPrefab, propelPrefab;
+	public GameObject asteroidPrefab, clockPrefab, fieldPrefab, gunPrefab, playerPrefab, propelPrefab, side1Prefab, side2Prefab;
 
-	const float updateRate = 0.033f;
-	const float radius = 2000;
-	const float clockRotSpd = Mathf.PI * updateRate;
-	const float propelSpd = 1000 * updateRate;
+	public const float updateRate = 0.033f;
+	public const float radius = 2000;
+	public const float clockRotSpd = Mathf.PI * updateRate;
 
 	public static int level = 1;
-	public static float timeScale = 1;
 	public static Obj field;
 	public static List<Obj> objs = new List<Obj>();
 
@@ -32,20 +30,23 @@ public class Manager : MonoBehaviour {
 			AddObj(clockPrefab, new Vector2(200, 0), new Vector2(), Mathf.PI, clockRotSpd, true);
 			break;
 		case 2:
-			AddObj(clockPrefab, new Vector2(0, 200), new Vector2(), 0, clockRotSpd, true);
-			AddObj(clockPrefab, new Vector2(200, 0), new Vector2(), 0, clockRotSpd, true);
+			AddObj(gunPrefab, new Vector2(0, 200), new Vector2(), 0, clockRotSpd, true);
+			AddObj(gunPrefab, new Vector2(200, 0), new Vector2(), 0, clockRotSpd, true);
 			AddObj(side2Prefab, new Vector2(400, 200), new Vector2(), 0, 0, true);
 			AddObj(side1Prefab, objs[0].pos, new Vector2(600 * updateRate, 0), 0, 0);
 			AddObj(asteroidPrefab, objs[1].pos, new Vector2(0, 600 * updateRate), 0, 0);
+			objs[0].GetComponent<Gun>().shot = objs[3];
+			objs[1].GetComponent<Gun>().shot = objs[4];
 			break;
 		case 3:
 			AddObj(side1Prefab, new Vector2(200, 0), new Vector2(), 0, clockRotSpd);
 			AddObj(side2Prefab, new Vector2(400, 0), new Vector2(), 0, clockRotSpd);
 			break;
 		case 4:
-			AddObj(asteroidPrefab, new Vector2(-200, 200), new Vector2(), 0, 0, true);
+			AddObj(gunPrefab, new Vector2(-200, 200), new Vector2(), 0, 0, true);
 			AddObj(side2Prefab, new Vector2(200, 200), new Vector2(), 0, 0, true);
 			AddObj(side1Prefab, objs[0].pos, new Vector2(100 * updateRate, 0), 0, clockRotSpd);
+			Destroy(objs[0].GetComponent<Gun>());
 			break;
 		}
 	}
@@ -83,8 +84,6 @@ public class Manager : MonoBehaviour {
 		foreach (Obj obj in objs) obj.UpdatePrevPos();
 		foreach (Obj obj in objs) obj.UpdatePos();
 		if (level == 2) {
-			if (objs[0].rot < objs[0].prevRot) objs[3].pos = objs[0].pos;
-			if (objs[1].rot < objs[1].prevRot) objs[4].pos = objs[1].pos;
 			if (Vector2.Distance(objs[3].pos, objs[4].pos) < 50) {
 				objs[3].pos.x = -10000;
 				objs[4].pos.x = -20000;

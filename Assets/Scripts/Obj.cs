@@ -16,13 +16,16 @@ public class Obj : MonoBehaviour {
 		float mul = field == null ? 1 : Mathf.Clamp01(Vector2.Distance(pos, field.prevPos) / 500 + 0.2f);
 		// update position and rotation
 		dilatedVel = field == null || immovable ? vel : field.dilatedVel + (vel - field.dilatedVel) * mul;
-		pos += dilatedVel / Manager.timeScale;
-		rot += velRot * mul / Manager.timeScale;
+		pos += dilatedVel;
+		rot += velRot * mul;
 		if (rot < 0) rot += Mathf.PI * 2;
 		if (rot > Mathf.PI * 2) rot -= Mathf.PI * 2;
+		// update components
+		Gun gun = GetComponent<Gun>();
+		if (gun != null) gun.UpdateObj(mul);
 	}
 
-	public void Update() {
+	void Update() {
 		transform.position = pos / 100;
 		transform.rotation = Quaternion.Euler(0, 0, rot * Mathf.Rad2Deg - 90);
 		GetComponent<Renderer>().enabled = enable;
