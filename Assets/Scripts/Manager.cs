@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 
 public class Manager : MonoBehaviour {
-	public GameObject asteroidPrefab, clockPrefab, fieldPrefab, gunPrefab, playerPrefab, propelPrefab, side1Prefab, side2Prefab;
+	public GameObject asteroidPrefab, clockPrefab, fieldPrefab, gunPrefab, gunNozzlePrefab, playerPrefab, propelPrefab, side1Prefab, side2Prefab;
 
 	public const float updateRate = 0.033f;
 	public const float radius = 2000;
 	public const float clockRotSpd = Mathf.PI * updateRate;
 
+	public static Manager singleton;
 	public static int level = 1;
 	public static Obj field;
 	public static List<Obj> objs = new List<Obj>();
@@ -15,6 +16,7 @@ public class Manager : MonoBehaviour {
 	// Use this for initialization
 	void Start() {
 		Time.fixedDeltaTime = updateRate;
+		singleton = this;
 		field = AddObj(fieldPrefab, new Vector2(), new Vector2(), 0);
 		field.enable = false;
 		objs.Remove(field);
@@ -31,7 +33,7 @@ public class Manager : MonoBehaviour {
 			break;
 		case 2:
 			AddObj(gunPrefab, new Vector2(0, 200), new Vector2(), 0, clockRotSpd, true);
-			AddObj(gunPrefab, new Vector2(200, 0), new Vector2(), 0, clockRotSpd, true);
+			AddObj(gunPrefab, new Vector2(200, 0), new Vector2(), Mathf.PI / 2, clockRotSpd, true);
 			AddObj(side2Prefab, new Vector2(400, 200), new Vector2(), 0, 0, true);
 			AddObj(side1Prefab, objs[0].pos, new Vector2(600 * updateRate, 0), 0, 0);
 			AddObj(asteroidPrefab, objs[1].pos, new Vector2(0, 600 * updateRate), 0, 0);
@@ -46,7 +48,6 @@ public class Manager : MonoBehaviour {
 			AddObj(gunPrefab, new Vector2(-200, 200), new Vector2(), 0, 0, true);
 			AddObj(side2Prefab, new Vector2(200, 200), new Vector2(), 0, 0, true);
 			AddObj(side1Prefab, objs[0].pos, new Vector2(100 * updateRate, 0), 0, clockRotSpd);
-			Destroy(objs[0].GetComponent<Gun>());
 			break;
 		}
 	}
@@ -65,7 +66,7 @@ public class Manager : MonoBehaviour {
 	}
 
 	void FixedUpdate() {
-		if (level == 1 && Mathf.Abs(objs[0].rot - objs[1].rot) < 0.1
+		if (level == 1 && Mathf.Abs(objs[0].rot % (Mathf.PI * 2) - objs[1].rot % (Mathf.PI * 2)) < 0.1
 				|| level == 2 && objs[3].pos.x > objs[2].pos.x
 				|| level == 3 && Vector2.Distance(objs[0].pos, objs[1].pos) < 100
 				|| level == 4 && objs[2].pos.x > objs[1].pos.x) {
@@ -89,6 +90,6 @@ public class Manager : MonoBehaviour {
 				objs[4].pos.x = -20000;
 			}
 		}
-		if (level == 4 && objs[2].rot < objs[2].prevRot) objs[2].pos = objs[0].pos;
+		if (level == 4 && objs[2].rot % (Mathf.PI * 2) < objs[2].prevRot % (Mathf.PI * 2)) objs[2].pos = objs[0].pos;
 	}
 }

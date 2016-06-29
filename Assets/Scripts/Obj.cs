@@ -18,8 +18,6 @@ public class Obj : MonoBehaviour {
 		dilatedVel = field == null || immovable ? vel : field.dilatedVel + (vel - field.dilatedVel) * mul;
 		pos += dilatedVel;
 		rot += velRot * mul;
-		if (rot < 0) rot += Mathf.PI * 2;
-		if (rot > Mathf.PI * 2) rot -= Mathf.PI * 2;
 		// update components
 		Gun gun = GetComponent<Gun>();
 		if (gun != null) gun.UpdateObj(mul);

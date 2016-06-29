@@ -112,13 +112,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14b5cdf313ef44d75b76b07a89307488, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  side1Prefab: {fileID: 165258, guid: 3552a95b5f0814d15a6fec9491ef488d, type: 2}
-  side2Prefab: {fileID: 141948, guid: 7968e2d7e8fe443ce9f8443c3735412f, type: 2}
-  playerPrefab: {fileID: 183902, guid: a6a076f1c7a8441fbb1d81921bd0f394, type: 2}
   asteroidPrefab: {fileID: 109696, guid: dca0800cc8cb348309ec2d4eba561c80, type: 2}
   clockPrefab: {fileID: 155216, guid: a969b800fb9af4ee3bd30fc49d7e6d93, type: 2}
   fieldPrefab: {fileID: 106730, guid: 0f3c68c0cc6ed4328b8b2a4c7710b15d, type: 2}
+  gunPrefab: {fileID: 114570, guid: beb19f434e79240998e3a461d14353ba, type: 2}
+  gunNozzlePrefab: {fileID: 142568, guid: 24de0168fc1d54ac28e08a5db0e04fb2, type: 2}
+  playerPrefab: {fileID: 183902, guid: a6a076f1c7a8441fbb1d81921bd0f394, type: 2}
   propelPrefab: {fileID: 113950, guid: e1cdd7c9ca34b464597bc279fa82ab24, type: 2}
+  side1Prefab: {fileID: 165258, guid: 3552a95b5f0814d15a6fec9491ef488d, type: 2}
+  side2Prefab: {fileID: 141948, guid: 7968e2d7e8fe443ce9f8443c3735412f, type: 2}
 --- !u!4 &1727416053
 Transform:
   m_ObjectHideFlags: 0

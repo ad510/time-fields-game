@@ -2,24 +2,32 @@
 using System.Collections;
 
 public class Gun : MonoBehaviour {
+	GameObject nozzle;
 	public Obj shot;
-	public float interval = 2, reload = 0;
+	float rot;
 
 	// Use this for initialization
 	void Start() {
-	
+	}
+
+	void OnDestroy() {
+		Destroy(nozzle);
 	}
 
 	public void UpdateObj(float mul) {
-		reload += Manager.updateRate * mul;
-		if (reload >= interval) {
-			reload -= interval;
-			shot.pos = GetComponent<Obj>().pos;
+		Obj o = GetComponent<Obj>();
+		if (nozzle == null) {
+			nozzle = Instantiate(Manager.singleton.gunNozzlePrefab) as GameObject;
+			rot = o.prevRot;
 		}
+		if ((o.rot - rot + Mathf.PI * 2) % (Mathf.PI * 2) < (o.prevRot - rot + Mathf.PI * 2) % (Mathf.PI * 2)) shot.pos = o.pos;
 	}
 	
 	// Update is called once per frame
 	void Update() {
-		// transparency: http://answers.unity3d.com/questions/684997/change-transparency-of-a-sprite.html
+		if (nozzle != null) {
+			nozzle.transform.position = transform.position + Vector3.forward;
+			nozzle.transform.rotation = Quaternion.Euler(0, 0, rot * Mathf.Rad2Deg - 90);
+		}
 	}
 }
