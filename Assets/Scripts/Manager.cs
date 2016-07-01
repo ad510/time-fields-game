@@ -11,6 +11,7 @@ public class Manager : MonoBehaviour {
 	public static Manager singleton;
 	public static int level = 0;
 	public static string message = "";
+	public static GUIStyle lblStyle;
 	public static Obj field;
 	public static List<Obj> objs = new List<Obj>();
 
@@ -18,6 +19,9 @@ public class Manager : MonoBehaviour {
 	void Start() {
 		Time.fixedDeltaTime = updateRate;
 		singleton = this;
+		lblStyle = GUIStyle.none;
+		lblStyle.fontSize = Screen.height / 10;
+		lblStyle.normal.textColor = Color.white;
 		field = AddObj(fieldPrefab, new Vector2(), new Vector2(), 0);
 		field.enable = false;
 		objs.Remove(field);
@@ -30,7 +34,7 @@ public class Manager : MonoBehaviour {
 		objs.Clear();
 		switch (level) {
 		case 0:
-			message = "Tap and hold to create a time field. Make the clock hands match.";
+			message = "Tap and hold to create a time field.\nMake the clock hands match.";
 			break;
 		case 1:
 			AddObj(clockPrefab, new Vector2(-200, 0), new Vector2(), 0, clockRotSpd, true);
@@ -54,6 +58,7 @@ public class Manager : MonoBehaviour {
 			break;
 		case 5:
 			AddObj(gunPrefab, new Vector2(-200, 200), new Vector2(), 0, 0, true);
+			objs[0].enable = false;
 			AddObj(side2Prefab, new Vector2(200, 200), new Vector2(), 0, 0, true);
 			AddObj(side1Prefab, objs[0].pos, new Vector2(100 * updateRate, 0), 0, clockRotSpd);
 			break;
@@ -103,8 +108,9 @@ public class Manager : MonoBehaviour {
 
 	void OnGUI() {
 		if (message != "") {
+			GUI.skin.button.fontSize = lblStyle.fontSize;
 			GUILayout.BeginArea(new Rect(0, 0, Screen.width, Screen.height));
-			GUILayout.Label(message);
+			GUILayout.Label(message, lblStyle);
 			GUILayout.FlexibleSpace();
 			if (GUILayout.Button("Continue")) {
 				level++;
