@@ -25,7 +25,7 @@ public class Obj : MonoBehaviour {
 
 	public void UpdatePos() {
 		Obj field = Manager.field.enable ? Manager.field : null;
-		float mul = field == null ? 1 : Mathf.Clamp01(Vector2.Distance(pos, field.prevPos) / 500 + 0.2f);
+		float mul = field == null ? 1 : Mathf.Clamp01(Vector2.Distance(pos, field.prevPos) / 500 + 0.4f);
 		// update position and rotation
 		dilatedVel = field == null || immovable ? vel : field.dilatedVel + (vel - field.dilatedVel) * mul;
 		pos += dilatedVel;
