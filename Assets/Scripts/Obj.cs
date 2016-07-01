@@ -6,6 +6,18 @@ public class Obj : MonoBehaviour {
 	public float rot, prevRot, velRot;
 	public bool enable = true, immovable;
 
+	void Start() {
+		if (immovable) {
+			LineRenderer line = gameObject.AddComponent<LineRenderer>();
+			line.material.shader = Shader.Find("Sprites/Default");
+			line.material.color = Color.gray;
+			line.SetWidth(0.5f, 0.5f);
+			line.SetVertexCount(2);
+			line.SetPosition(0, Vector3.forward * 2 + (Vector3)pos / 100);
+			line.SetPosition(1, Vector3.forward * 2 + (Vector3)pos);
+		}
+	}
+
 	public void UpdatePrevPos() {
 		prevPos = pos;
 		prevRot = rot;
