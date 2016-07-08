@@ -36,7 +36,7 @@ public class Manager : MonoBehaviour {
 		objs.Clear();
 		switch (level) {
 		case 1:
-			message.text = "Tap and hold where you want to slow down time.\nSynchronize the clock hands.";
+			message.text = "Tap and hold to slow down a clock.\nSynchronize the clock hands.";
 			AddObj(clockPrefab, new Vector2(-200, 0), new Vector2(), 0, clockRotSpd, true);
 			AddObj(clockPrefab, new Vector2(200, 0), new Vector2(), Mathf.PI, clockRotSpd, true);
 			break;
