@@ -36,7 +36,7 @@ public class Manager : MonoBehaviour {
 		objs.Clear();
 		switch (level) {
 		case 1:
-			message.text = "Tap and hold to create a time field.\nSynchronize the clock hands.";
+			message.text = "Tap and hold where you want to slow down time.\nSynchronize the clock hands.";
 			AddObj(clockPrefab, new Vector2(-200, 0), new Vector2(), 0, clockRotSpd, true);
 			AddObj(clockPrefab, new Vector2(200, 0), new Vector2(), Mathf.PI, clockRotSpd, true);
 			break;
@@ -77,10 +77,10 @@ public class Manager : MonoBehaviour {
 	}
 
 	void FixedUpdate() {
-		if (level == 1 && Mathf.Abs(objs[0].rot % (Mathf.PI * 2) - objs[1].rot % (Mathf.PI * 2)) < 0.1
+		if (level == 1 && Mathf.Abs(objs[0].rot % (Mathf.PI * 2) - objs[1].rot % (Mathf.PI * 2)) < 0.5
 				|| level == 2 && objs[3].pos.x > objs[2].pos.x
 				|| level == 3 && Vector2.Distance(objs[0].pos, objs[1].pos) < 100
-				|| level == 4 && objs[2].pos.x > objs[1].pos.x) {
+				|| level == 4 && objs[2].pos.x > objs[1].pos.x - 100) {
 			level++;
 			LoadLevel();
 		}
