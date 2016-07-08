@@ -24,8 +24,20 @@ public class Obj : MonoBehaviour {
 	}
 
 	public void UpdatePos() {
-		Obj field = Manager.field.enable ? Manager.field : null;
-		float mul = field == null ? 1 : Mathf.Clamp01(Vector2.Distance(pos, field.prevPos) / 500 + 0.4f);
+		Obj field = null;
+		float dist = 0, mul = 1;
+		// find closest field
+		foreach (Obj f in Manager.fields) {
+			if (f.enable) {
+				float d = Vector2.Distance(pos, f.prevPos);
+				float m = Mathf.Clamp01(d / 500 + 0.4f); // possible to compute this after loop, or use a weighted average instead (sum up all delta v's won't work b/c 2 close fields would repel player)
+				if (m < 1 && (field == null || d < dist)) {
+					field = f;
+					dist = d;
+					mul = m;
+				}
+			}
+		}
 		// update position and rotation
 		dilatedVel = field == null || immovable ? vel : field.dilatedVel + (vel - field.dilatedVel) * mul;
 		pos += dilatedVel;

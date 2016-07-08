@@ -12,7 +12,7 @@ public class Manager : MonoBehaviour {
 	public static Manager singleton;
 	public static int level = 1;
 	public static GUIStyle lblStyle;
-	public static Obj field;
+	public static List<Obj> fields = new List<Obj>();
 	public static bool waitForRelease;
 	public static List<Obj> objs = new List<Obj>();
 
@@ -23,47 +23,49 @@ public class Manager : MonoBehaviour {
 		lblStyle = GUIStyle.none;
 		lblStyle.fontSize = Screen.height / 10;
 		lblStyle.normal.textColor = Color.white;
-		field = AddObj(fieldPrefab, new Vector2(), new Vector2(), 0);
-		field.enable = false;
-		objs.Remove(field);
+		for (int i = 0; i < 10; i++) {
+			fields.Add(NewObj(fieldPrefab, new Vector2(), new Vector2(), 0));
+			fields[fields.Count - 1].enable = false;
+		}
 		LoadLevel();
 	}
 
 	void LoadLevel() {
 		message.text = "";
 		waitForRelease = true;
+		foreach (Obj field in fields) field.enable = false;
 		foreach (Obj obj in objs) Destroy(obj.gameObject);
 		objs.Clear();
 		switch (level) {
 		case 1:
 			message.text = "Tap and hold to slow down a clock.\nSynchronize the clock hands.";
-			AddObj(clockPrefab, new Vector2(-200, 0), new Vector2(), 0, clockRotSpd, true);
-			AddObj(clockPrefab, new Vector2(200, 0), new Vector2(), Mathf.PI, clockRotSpd, true);
+			objs.Add(NewObj(clockPrefab, new Vector2(-200, 0), new Vector2(), 0, clockRotSpd, true));
+			objs.Add(NewObj(clockPrefab, new Vector2(200, 0), new Vector2(), Mathf.PI, clockRotSpd, true));
 			break;
 		case 2:
 			message.text = "Get the green object to the blue object.";
-			AddObj(gunPrefab, new Vector2(-400, 200), new Vector2(), 0, clockRotSpd, true);
-			AddObj(gunPrefab, new Vector2(0, -200), new Vector2(), Mathf.PI / 2, clockRotSpd, true);
-			AddObj(side2Prefab, new Vector2(400, 200), new Vector2(), 0, 0, true);
-			AddObj(side1Prefab, objs[0].pos, new Vector2(600 * updateRate, 0), 0, 0);
-			AddObj(asteroidPrefab, objs[1].pos, new Vector2(0, 600 * updateRate), 0, 0);
+			objs.Add(NewObj(gunPrefab, new Vector2(-400, 200), new Vector2(), 0, clockRotSpd, true));
+			objs.Add(NewObj(gunPrefab, new Vector2(0, -200), new Vector2(), Mathf.PI / 2, clockRotSpd, true));
+			objs.Add(NewObj(side2Prefab, new Vector2(400, 200), new Vector2(), 0, 0, true));
+			objs.Add(NewObj(side1Prefab, objs[0].pos, new Vector2(600 * updateRate, 0), 0, 0));
+			objs.Add(NewObj(asteroidPrefab, objs[1].pos, new Vector2(0, 600 * updateRate), 0, 0));
 			objs[0].GetComponent<Gun>().shot = objs[3];
 			objs[1].GetComponent<Gun>().shot = objs[4];
 			break;
 		case 3:
-			AddObj(side1Prefab, new Vector2(-200, 0), new Vector2(), 0, clockRotSpd);
-			AddObj(side2Prefab, new Vector2(200, 0), new Vector2(), 0, clockRotSpd, true);
+			objs.Add(NewObj(side1Prefab, new Vector2(-200, 0), new Vector2(), 0, clockRotSpd));
+			objs.Add(NewObj(side2Prefab, new Vector2(200, 0), new Vector2(), 0, clockRotSpd, true));
 			break;
 		case 4:
-			AddObj(gunPrefab, new Vector2(-200, 200), new Vector2(), 0, 0, true);
+			objs.Add(NewObj(gunPrefab, new Vector2(-200, 200), new Vector2(), 0, 0, true));
 			objs[0].enable = false;
-			AddObj(side2Prefab, new Vector2(200, 200), new Vector2(), 0, 0, true);
-			AddObj(side1Prefab, objs[0].pos, new Vector2(100 * updateRate, 0), 0, clockRotSpd);
+			objs.Add(NewObj(side2Prefab, new Vector2(200, 200), new Vector2(), 0, 0, true));
+			objs.Add(NewObj(side1Prefab, objs[0].pos, new Vector2(100 * updateRate, 0), 0, clockRotSpd));
 			break;
 		}
 	}
 
-	Obj AddObj(GameObject prefab, Vector2 pos, Vector2 vel, float rot, float velRot = 0, bool immovable = false) {
+	Obj NewObj(GameObject prefab, Vector2 pos, Vector2 vel, float rot, float velRot = 0, bool immovable = false) {
 		GameObject go = Instantiate(prefab) as GameObject;
 		Obj o = go.GetComponent<Obj>();
 		o.pos = pos;
@@ -72,7 +74,6 @@ public class Manager : MonoBehaviour {
 		o.rot = rot;
 		o.velRot = velRot;
 		o.immovable = immovable;
-		objs.Add(o);
 		return o;
 	}
 
@@ -84,15 +85,36 @@ public class Manager : MonoBehaviour {
 			level++;
 			LoadLevel();
 		}
-		if (Input.GetMouseButton(0) && !waitForRelease) {
+		if (Input.GetMouseButton(0) && Input.touchCount == 0 && !waitForRelease) {
+			Obj field = fields[0];
 			field.prevPos = field.pos;
 			field.pos = Camera.main.ScreenToWorldPoint(Input.mousePosition) * 100;
 			if (!field.enable) field.prevPos = field.pos;
 			field.dilatedVel = field.vel = field.pos - field.prevPos;
 			field.enable = true;
 		} else {
+			Obj field = fields[0];
 			if (!Input.GetMouseButton(0)) waitForRelease = false;
 			field.enable = false;
+		}
+		if (Input.touchCount == 0) waitForRelease = false;
+		if (!waitForRelease) {
+			int j = 0;
+			for (int i = 0; i < Input.touchCount; i++) {
+				Obj field = fields[j];
+				if (Input.GetTouch(i).phase == TouchPhase.Ended) {
+					field.enable = false;
+					fields.Add(field);
+					fields.RemoveAt(j);
+				} else {
+					field.prevPos = field.pos;
+					field.pos = Camera.main.ScreenToWorldPoint(Input.GetTouch(i).position) * 100;
+					if (Input.GetTouch(i).phase == TouchPhase.Began) field.prevPos = field.pos;
+					field.dilatedVel = field.vel = field.pos - field.prevPos;
+					field.enable = true;
+					j++;
+				}
+			}
 		}
 		foreach (Obj obj in objs) obj.UpdatePrevPos();
 		foreach (Obj obj in objs) obj.UpdatePos();
