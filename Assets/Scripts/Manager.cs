@@ -62,6 +62,10 @@ public class Manager : MonoBehaviour {
 			objs.Add(NewObj(side2Prefab, new Vector2(200, 200), new Vector2(), 0, 0, true));
 			objs.Add(NewObj(side1Prefab, objs[0].pos, new Vector2(100 * updateRate, 0), 0, clockRotSpd));
 			break;
+		case 5:
+			objs.Add(NewObj(side1Prefab, new Vector2(-200, 0), new Vector2(), 0, clockRotSpd));
+			objs.Add(NewObj(side2Prefab, new Vector2(200, 0), new Vector2(), 0, clockRotSpd));
+			break;
 		}
 	}
 
@@ -80,7 +84,7 @@ public class Manager : MonoBehaviour {
 	void FixedUpdate() {
 		if (level == 1 && Mathf.Abs(objs[0].rot % (Mathf.PI * 2) - objs[1].rot % (Mathf.PI * 2)) < 0.5
 				|| level == 2 && objs[3].pos.x > objs[2].pos.x
-				|| level == 3 && Vector2.Distance(objs[0].pos, objs[1].pos) < 100
+				|| (level == 3 || level == 5) && Vector2.Distance(objs[0].pos, objs[1].pos) < 100
 				|| level == 4 && objs[2].pos.x > objs[1].pos.x - 100) {
 			level++;
 			LoadLevel();
